@@ -3,6 +3,7 @@
 References
 
 - [The Node.js Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick#timers)
+- [Node.js animated: Event Loop](https://dev.to/nodedoctors/an-animated-guide-to-nodejs-event-loop-3g62)
 - [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
 JavaScript, particularly in the browser and Node.js, runs in a single-threaded environment, meaning only one task is executed at a time. To handle I/O or timers efficiently without blocking the main thread, it uses the event loop along with Web APIs or Node APIs.
@@ -36,4 +37,11 @@ The event loop processes microtasks before any macrotasks after each execution c
 
 ## 2. Promises
 
-## 3. NodeJS
+## 3. NodeJS Event Loop
+
+![event-loop-nodejs](../.imgs/event-loop-node.png)
+
+- V8 Engine: Memory Heap, Call Stack
+- libuv: Event Loop
+
+### Worker Pool
