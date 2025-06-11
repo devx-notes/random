@@ -27,3 +27,12 @@ protoc --go_out=. --go-grpc_out=. proto/service/greeter.proto
 | Tools           | Usage           | Ouput |
 |-----------------|-----------------|-------|
 | Buf             |                 |       |
+
+
+## Configuration Files
+
+| File           | Use Case                                                                                                   |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| `buf.gen.yaml` | Defines the set of code generation plugins, the plugins options, and the inputs used by the `buf generate` |
+| `buf.yaml`     | Defines a workspace and the configurations for each module within it.                                      |
+| `buf.lock`     | Contains the workspace's dependency manifest (auto-generated)                                              |
