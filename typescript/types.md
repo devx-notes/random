@@ -12,6 +12,24 @@ function printId(id: number | string) {
 }
 ```
 
+Even though `typeof null` returns `object` in JavaScript, TypeScript's type system treats `null` as its own distinct type. In TypeScript, `T | null`  means that the variable can hold a value of type T or it can hold the null value. 
+
+-  When [strictNullChecks](https://www.typescriptlang.org/docs/handbook/2/basic-types.html#strictnullchecks) is enabled, `null` and `undefined` have their own distinct types
+
+```ts
+interface MyObject {
+  name: string;
+}
+
+function processObject(obj: MyObject | null) {
+  if (obj !== null) {
+    console.log(obj.name);
+  } else {
+    console.log("Object is null");
+  }
+}
+```
+
 ### Intersection Types
 
 An intersection type is defined using the & operator. It is mainly used to combine existing object types.
