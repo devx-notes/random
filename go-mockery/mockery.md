@@ -70,10 +70,9 @@ Predefined variables is passed to the TemplateData struct. TemplateData is the d
 - **SrcPackagePath**: the fully qualified package path of the source package. e.g. "github.com/vektra/mockery/v3".
 - **Template**: the value of the `template` parameter.
 
-### String inspection and manipulation
+### Custom Output 
 
-- **Naming**: lower, upper, camelcase, snakecase, kebabcase, firstLower, firstUpper
-- **Inspection**: firstIsLower, contains, hasPrefix, etc.
+Output name can be custom using these keywords: lower, upper, camelcase, snakecase, kebabcase, firstLower, firstUpper
 
 ```yml
 all: false
