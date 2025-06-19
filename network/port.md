@@ -7,7 +7,7 @@ A port in networking is a software-defined number associated to a network protoc
 
 ## 1. Socket
 
-Both Socket and Port are the terms used in Transport Layer. A socket is an endpoint for data transfer between the devices, it is identified by  $\{SRC-IP, SRC-PORT\}$, $\{DEST-IP, DEST-PORT\}$ and $PROTOCOL$
+Both Socket and Port are the terms used in Transport Layer. A socket is an endpoint for data transfer between the devices, it is identified by  $\{src-ip, src-port\}$, $\{dest-ip, dest-port\}$ and $protocol$
 
 - On startup, the server creates a listening socket bound to a specific port.
 - When a client connects to a server's listening port, the server creates a new socket for that specific connection.
@@ -16,10 +16,20 @@ Both Socket and Port are the terms used in Transport Layer. A socket is an endpo
 ### TCP Socket
 
 ```c
+int sockfd;
+struct sockaddr_in servaddr;
+
 sockfd = socket(AF_INET, SOCK_STREAM, 0); 
+servaddr.sin_family = AF_INET; 
+servaddr.sin_addr.s_addr = htonl(INADDR_ANY); 
+servaddr.sin_port = htons(PORT); 
+
+bind(sockfd, (SA*)&servaddr, sizeof(servaddr));
 ```
 
 ## 2. File Descriptor 
+
+In Unix and Unix-like computer operating systems, a file descriptor (`fd`, less frequently `fildes`) is a process-unique identifier (handle) for a file or other input/output resource, such as a pipe or network socket.
 
 ## 3. References
 
