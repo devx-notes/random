@@ -24,10 +24,10 @@
 
 ### PACELC Theorem
 
-The PACELC theorem is an extension to the CAP theorem. Both theorems were developed to provide a framework for comparing distributed systems.
+PALCELC and CAP were developed to provide a framework for comparing distributed systems. PACELC is an extension to the CAP theorem to address a key limitation of the CAP theorem: it makes no provision for performance or latency. 
 
 > [!NOTE]
-> In a distributed database, there is no way to avoid system partitions. A partition is a break in communications—a temporarily delayed or lost connection between nodes. 
+> A partition is a break in communications—a temporarily delayed or lost connection between nodes. In a distributed database, there is no way to avoid system partitions. 
 >
 > - Partition tolerance means that in spite of any number of breakdowns in communication between nodes in the system, the cluster will continue to work.
 > - Although CAP theorem stating a CA distributed database is possible exists, there is currently no true CA distributed database system
