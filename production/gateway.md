@@ -6,7 +6,7 @@ A specialized reverse proxy that sits in front of a set of microservices to aggr
 
 ## 2. Other Routing Components
 
-> [!NOTE
+> [!NOTE]
 > Overlap exists, a reverse proxy may also act as a load balancer or API gateway.
 
 ### 2.1. Forward Proxy

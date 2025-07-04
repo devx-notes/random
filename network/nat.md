@@ -1,3 +1,3 @@
 # NAT
 
-## CGNAT
+## CGNAT (Double-NAT)
