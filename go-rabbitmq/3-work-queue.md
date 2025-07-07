@@ -1,21 +1,9 @@
-# Using RabbitMQ in Go
-
-In AMQP, clients publish Exchanges, not to Queues. The routing between producers and consumer queues is via Bindings. These bindings form the logical topology of the broker.
-
-## rabbitmq/amqp091-go
-
-An AMQP 0-9-1 Go client maintained by the RabbitMQ team. Originally `streadway/amqp`
-
-```sh
-go get github.com/rabbitmq/amqp091-go
-```
-
-In this library, a message sent from publisher is called a `Publishing` and a message received to a consumer is called a `Delivery`.
+# Work Queues
 
 ## 1. Connection
 
-- A single connection is intended to last for the full lifetime of the process.
-- Channels are created per logical task (publisher, consumer group, etc.) and are not thread‑safe.
+A single connection is intended to last for the full lifetime of the process.
+
 
 ```go
 conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
@@ -23,7 +11,11 @@ if err != nil {
     panic(err)
 }
 defer conn.Close()
+```
 
+Channels are created per logical task (publisher, consumer group, etc.) and are not thread‑safe.
+
+```go
 ch, err := conn.Channel()
 if err != nil {
     panic(err)
@@ -33,90 +25,25 @@ defer ch.Close()
 
 ## 2. Publishing Messages
 
-Declare a queue to send messsage to
-
 ```go
-q, err := ch.QueueDeclare(
-  "hello", // name
-  false,   // durable
-  false,   // delete when unused
-  false,   // exclusive
-  false,   // no-wait
-  nil,     // arguments
-)
-if err != nil {
-    panic(err)
-}
-```
-
-> [!IMPORTANT]
-> In AMQP 0‑9‑1 the topology‑declaration steps `ExchangeDeclare`, `QueueDeclare`, and `QueueBind` are not strictly mandatory in every program.
-
-- Re‑declaring queue with identical attributes is harmless but attempting to re‑declare with different attributes triggers channel‑level error 406. For this reason, `QueueDeclare` is optional but appears in most production examples. 
-- If the producer and the consumer agree to use a pre‑declared exchange like `""` or `amq.topic`, `ExchangeDeclare` can be skipped .
-
-### Binding
-
-A binding refers to how exchanges are connected to queues or to other exchanges. This one tells RabbitMQ to deliver messages published to `exchangeName` with this `routingKey` into `queueName`
-
-```go
-// tells the exchange how to route messages
-ch.QueueBind(
-    queueName,    // the queue to bind
-    routingKey,   // key to match on publish
-    exchangeName, // the exchange to bind to
-    false,
-    nil,
-)
-```
-
-This one tells RabbitMQ to route messages sent to `sourceExchange` with `routingKey` to `destinationExchange` as if they were published directly.
-
-```go
-// links one exchange to another
-ch.ExchangeBind(
-    destinationExchange,    // the exchange to bind to
-    routingKey,             // key to match on publish
-    sourceExchange,         // the exchange to bind to
-    false,
-    nil,
-)
-```
-
-Whenever a named exchange other than `""` is used, at least one `QueueBind` or `ExchangeBind` explicit binding is essential; otherwise messages simply vanish.
-
-- Adding QueueBind to the publish routine is not required and is usually avoided
-- Responsibility for bindings is normally assigned to the consumer side or to a dedicated bootstrap step, it helps keeping the publish path lean while still guaranteeing correct routing through proper topology management elsewhere.
-
-```go
-err := ch.ExchangeDeclare(
-    "exchange-name", // name
-    "fanout",        // exchange-type: fanout, topic, direct
-    true,            // durable
-    false,           // auto-delete
-    false,           // internal
-    false,           // no-wait
-    nil,             // arguments
-)
-if err != nil {
-    return err
-}
-
-err = consumeCh.QueueBind(
-		"queue-name",
-		"routing-key",
-		"exchange-name",
-		false,
-		nil,
-	)
-	if err != nil {
-		return err
-	}
+err = ch.PublishWithContext(ctx,
+  "",           // exchange
+  q.Name,       // routing key
+  false,        // mandatory
+  false,
+  amqp.Publishing {
+    DeliveryMode: amqp.Persistent,
+    ContentType:  "text/plain",
+    Body:         []byte(body),
+})
 ```
 
 ## 3. Consuming Messages
 
 The Qos (Quality of Service) method controls how many messages the broker will deliver to a consumer before it must acknowledge them.
+
+- A value of 0 is treated as infinite, allowing any number of unacknowledged messages.
+- Two prefetch limits should be enforced independently of each other; consumers will only receive new messages when neither limit on unacknowledged messages has been reached.
 
 ```go
 err = ch.Qos(
@@ -124,9 +51,6 @@ err = ch.Qos(
     0,     // prefetch size: the maximum total size (in bytes) of unacknowledged messages
     false, // global: scope of the prefetch setting, "false" for consumer, "true" for all consumer on the channel
 )
-if err != nil {
-    panic(err)
-}
 ```
 
 Every consumer has an identifier that is used by client libraries to determine what handler to invoke for a given delivery. Their names vary from protocol to protocol. Consumer tags are also used to cancel consumers.
@@ -137,7 +61,7 @@ msgs, err := ch.Consume(
     "",     // consumer tag
     true,   // auto-ack
     false,  // exclusive
-    false,  // no-local
+    false,  // no-local (not supported by RabbitMQ)
     false,  // no-wait
     nil,    // args
 )
@@ -222,7 +146,6 @@ confirm := <-ackCh
 if !confirm.Ack {
     // message was nacked or the channel closed – trigger retry
 }
-
 ```
 
 #### 🖥️ Consumer Acknowledgements
@@ -252,8 +175,3 @@ for {
 }
 ```
 
-
-## References
-
-- [GitHub | RabbitMQ Go Tutorials](https://github.com/rabbitmq/rabbitmq-tutorials/tree/main/go)
-- [Acknowledger Interface](https://github.com/rabbitmq/amqp091-go/blob/v1.10.0/delivery.go#L19)

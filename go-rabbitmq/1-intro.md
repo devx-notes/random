@@ -1,14 +1,8 @@
-# RabbitMQ Queues
+# RabbitMQ 
 
-References: [rabbitmq/go](https://www.rabbitmq.com/tutorials/tutorial-one-go)
+RabbitMQ is a message broker, it accepts and forwards messages. 
 
-RabbitMQ is a message broker: it accepts and forwards messages.
-
-## 1. Introduction
-
-RabbitMQ, and messaging in general, uses some jargon
-
-### Message Lifecycle
+## 1. Message Lifecycle
 
 When a message enters RabbitMQ it passes through three distinct phases
 
@@ -38,7 +32,7 @@ With autoAck=true the broker discards the message immediately after sending it, 
 | Broker → Consumer | Delivery Acknowledgment  | Message has been processed (or intentionally rejected) by the consumer. |
 
 
-### Channels
+## 2. Channels 
 
 Some applications need multiple logical connections to the broker. However, it is undesirable to keep many TCP connections open at the same time because doing so consumes system resources and makes it more difficult to configure firewalls. 
 
@@ -47,21 +41,32 @@ Some applications need multiple logical connections to the broker. However, it i
 - Much like connections, channels are meant to be long lived (channel pool). 
 - The client cannot be configured to allow for more channels than the server configured maximum
 
-### Exchange 
+## 3. Queues & Exchanges
 
-In AMQP 0-9-1, exchanges are the entities where publishers publish messages that are then routed to a set of queues or streams.
+A queue in RabbitMQ is an ordered collection of messages. Messages are enqueued and dequeued (delivered to consumers) in a FIFO manner.
+
+> [!NOTE]
+> Clients publish Exchanges, not to Queues.
+
+In AMQP 0-9-1, exchanges are the entities where publishers publish messages that are then routed to a set of queues or streams. 
 
 - Exchanges routes all messages that flow through them to one or more queues, streams, or other exchanges.
 - Every exchange belongs to one virtual host (logical groups of entities)
 
-## 2. Work Queues
+The routing between producers and consumer queues is via Bindings. These bindings form the logical topology of the broker.
 
-## 3. Pub/Sub
+### Streams
 
-### Other Solutions
+RabbitMQ Streams is a persistent replicated data structure that can complete the same tasks as queues: they buffer messages from producers that are read by consumers.
 
-#### Apache Kafka
+## References
 
-#### Apache ActiveMQ
+The official AMQP 0-9-1 Go client is `rabbitmq/amqp091-go` (forked from `streadway/amqp`), which is maintained by the RabbitMQ team. In this library, a message sent from publisher is called a `Publishing` and a message received to a consumer is called a `Delivery`.
 
-#### Redis
+```sh
+go get github.com/rabbitmq/amqp091-go
+```
+
+- [RabbitMQ | Go Tutorials](https://www.rabbitmq.com/tutorials/tutorial-one-go)
+- [GitHub | RabbitMQ Go Tutorials](https://github.com/rabbitmq/rabbitmq-tutorials/tree/main/go)
+- [Acknowledger Interface](https://github.com/rabbitmq/amqp091-go/blob/v1.10.0/delivery.go#L19)
