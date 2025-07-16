@@ -8,7 +8,6 @@ Electron applications consist of two main process types—the Main Process and o
 | Renderer       | Chromium + JS     | Web sandbox             | Renders app UI (HTML/CSS/JS)                                |
 | Preload Script | Node.js (limited) | In WebView, before UI   | Secure bridge, defines allowed APIs between Main & Renderer |
 
-
 ## 1. Security Recommendation
 
 ```js
